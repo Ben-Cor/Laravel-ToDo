@@ -9,10 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+    protected $hidden = ['timestamps', 'pivot'];
     public function up(): void
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
+            $table->string('content');
+            $table->boolean('completed')->default(false);
+            $table->foreignId('user_id');
+            $table->dateTime('due_date')->nullable();
             $table->timestamps();
         });
     }

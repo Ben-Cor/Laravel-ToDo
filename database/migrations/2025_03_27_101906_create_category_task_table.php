@@ -9,10 +9,14 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+
+    protected $hidden = ['timestamps'];
     public function up(): void
     {
         Schema::create('category_task', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('category_id');
+            $table->foreignId('task_id');
             $table->timestamps();
         });
     }
