@@ -32,7 +32,6 @@ class CategorySeeder extends Seeder
         foreach ($categories as $category) {
             DB::table('categories')->insert([
                 'name' => $category,
-                'user_id' =>fake()->numberBetween(1, 20),
             ]);
         }
 
