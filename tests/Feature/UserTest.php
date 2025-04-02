@@ -18,7 +18,17 @@ class UserTest extends TestCase
         $response = $this->get('/api/users');
         $response->assertStatus(200)
             ->assertJson(function (AssertableJson $json) {
-                $json->hasAll('message', 'data');
+                $json->hasAll('message', 'data')
+                    ->has('data', 3, function (AssertableJson $data) {
+                        $data->hasAll([
+                            'id',
+                            'name',
+                            'email',
+                            'email_verified_at',
+                            'experience',
+                            'tasks',
+                        ]);
+                    });
             });
     }
 }
