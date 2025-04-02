@@ -8,7 +8,7 @@ class UserController extends Controller
 {
     public function all()
     {
-        $users = User::with('tasks:content,id')->get();
+        $users = User::with('tasks')->get();
 
         return response()->json([
             'message' => 'Users successfully returned',

@@ -34,7 +34,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
         'updated_at',
-        'created_at'
+        'created_at',
     ];
 
     public function tasks(): HasMany
