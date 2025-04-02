@@ -14,13 +14,6 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    protected $hidden = ['updated_at', 'created_at'];
-
-    public function tasks(): HasMany
-    {
-        return $this->hasMany(Task::class);
-    }
-
     /**
      * The attributes that are mass assignable.
      *
@@ -40,7 +33,14 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'updated_at',
+        'created_at'
     ];
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
 
     /**
      * Get the attributes that should be cast.
