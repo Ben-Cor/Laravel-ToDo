@@ -13,6 +13,6 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Users successfully returned',
             'data' => $users,
-        ]);
+        ], 200);
     }
 }
