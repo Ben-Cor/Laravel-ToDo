@@ -31,4 +31,35 @@ class UserTest extends TestCase
                     });
             });
     }
+
+    public function test_users_controller_find_user_not_found()
+    {
+        $response = $this->get('/api/users/1');
+        $response->assertStatus(404)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll('message')
+                    ->has('message')
+                    ->where('message', 'User not found');
+            });
+    }
+
+    public function test_users_controller_find_user()
+    {
+        $user = User::factory()->create();
+        $response = $this->get('/api/users/' . $user->id);
+        $response->assertStatus(200)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll('message', 'data')
+                    ->has('data', function (AssertableJson $data) {
+                        $data->hasAll([
+                            'id',
+                            'name',
+                            'email',
+                            'email_verified_at',
+                            'experience',
+                            'tasks',
+                        ]);
+                    });
+            });
+    }
 }
