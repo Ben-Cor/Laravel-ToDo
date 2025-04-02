@@ -46,7 +46,7 @@ class UserTest extends TestCase
     public function test_users_controller_find_user()
     {
         $user = User::factory()->create();
-        $response = $this->get('/api/users/' . $user->id);
+        $response = $this->get('/api/users/'.$user->id);
         $response->assertStatus(200)
             ->assertJson(function (AssertableJson $json) {
                 $json->hasAll('message', 'data')
