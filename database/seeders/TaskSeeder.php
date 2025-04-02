@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -15,10 +14,10 @@ class TaskSeeder extends Seeder
     {
         for ($i = 0; $i < 40; $i++) {
             DB::table('tasks')->insert([
-                'content' =>fake()->words(5, true),
+                'content' => fake()->words(5, true),
                 'completed' => fake()->boolean(50),
-                'user_id' =>fake()->numberBetween(1, 20),
-                'due_date' =>fake()->dateTime(),
+                'user_id' => fake()->numberBetween(1, 20),
+                'due_date' => fake()->dateTime(),
             ]);
         }
     }

@@ -1,7 +1,6 @@
 <?php
 
-use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/users', [User::class , 'all']);
+Route::get('/users', [UserController::class, 'all']);
