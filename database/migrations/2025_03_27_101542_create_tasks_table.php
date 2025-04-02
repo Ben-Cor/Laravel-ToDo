@@ -10,6 +10,7 @@ return new class extends Migration
      * Run the migrations.
      */
     protected $hidden = ['timestamps', 'pivot'];
+
     public function up(): void
     {
         Schema::create('tasks', function (Blueprint $table) {

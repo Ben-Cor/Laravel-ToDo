@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\DB;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Category>
@@ -37,8 +36,8 @@ class CategoryFactory extends Factory
 
         foreach ($categories as $category) {
             return [
-        'name' => $category
-        ];
+                'name' => $category,
+            ];
         }
     }
 }

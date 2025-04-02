@@ -11,7 +11,8 @@ class Category extends Model
     /** @use HasFactory<CategoryFactory> */
     use HasFactory;
 
-    public function tasks() {
+    public function tasks()
+    {
         return $this->belongsToMany(Task::class);
     }
 }

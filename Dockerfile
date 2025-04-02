@@ -8,11 +8,13 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     git \
     unzip \
-    netcat-openbsd
+    netcat-openbsd \
+    sqlite3 \
+    libsqlite3-dev  # Add this line for SQLite support
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
-RUN docker-php-ext-install gd zip pdo pdo_mysql
+RUN docker-php-ext-install gd zip pdo pdo_mysql pdo_sqlite
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite

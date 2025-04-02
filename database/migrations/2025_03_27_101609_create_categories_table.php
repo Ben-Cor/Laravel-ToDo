@@ -10,6 +10,7 @@ return new class extends Migration
      * Run the migrations.
      */
     protected $hidden = ['pivot', 'timestamps'];
+
     public function up(): void
     {
         Schema::create('categories', function (Blueprint $table) {
