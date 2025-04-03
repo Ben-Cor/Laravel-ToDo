@@ -9,7 +9,7 @@ class TaskController extends Controller
 {
     public function addTask(TaskRequest $request)
     {
-        $task = new Task();
+        $task = new Task;
         $task->content = $request->input('content');
         $task->completed = $request->input('completed', false);
         $task->user_id = $request->input('user_id');
@@ -23,7 +23,7 @@ class TaskController extends Controller
         }
 
         return response()->json([
-            'message' => 'Task successfully created'
+            'message' => 'Task successfully created',
         ], 201);
     }
 }
