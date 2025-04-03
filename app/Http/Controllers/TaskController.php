@@ -45,4 +45,17 @@ class TaskController extends Controller
             'message' => 'Task successfully updated',
         ], 200);
     }
+
+    public function deleteTask(Task $task)
+    {
+        if (! $task->delete()) {
+            return response()->json([
+                'message' => 'Task deletion failed',
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Task successfully deleted',
+        ], 200);
+    }
 }
