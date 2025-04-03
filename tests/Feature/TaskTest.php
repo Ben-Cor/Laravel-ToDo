@@ -46,9 +46,9 @@ class TaskTest extends TestCase
 
         $request = [
             'content' => 2,
-            'completed' => "apple",
+            'completed' => 'apple',
             'user_id' => 5,
-            'due_date' => "date",
+            'due_date' => 'date',
         ];
 
         $response = $this->postJson('/api/tasks', $request);
@@ -63,13 +63,13 @@ class TaskTest extends TestCase
         User::factory()->create(['id' => 1]);
         Task::factory()->create([
             'id' => 1,
-            'content'=>'Test task',
-            'user_id' => 1
+            'content' => 'Test task',
+            'user_id' => 1,
         ]);
 
         $request = [
             'content' => 'Test task updated name',
-            'user_id' => 1
+            'user_id' => 1,
         ];
 
         $response = $this->putJson('/api/tasks/1', $request);
@@ -82,5 +82,29 @@ class TaskTest extends TestCase
         ]);
     }
 
+    public function test_update_task_invalid(): void
+    {
+        User::factory()->create(['id' => 1]);
+        Task::factory()->create([
+            'id' => 1,
+            'content' => 'Test task',
+            'completed' => false,
+            'due_date' => null,
+            'user_id' => 1,
+        ]);
 
+        $request = [
+            'content' => false,
+            'user_id' => 1,
+        ];
+
+        $response = $this->putJson('/api/tasks/1', $request);
+        $response->assertStatus(422);
+        $this->assertDatabaseHas('tasks', [
+            'content' => 'Test task',
+            'completed' => false,
+            'user_id' => 1,
+            'due_date' => null,
+        ]);
+    }
 }
