@@ -40,6 +40,7 @@ class UserController extends Controller
         $user->email = $request->input('email');
         $user->password = bcrypt($request->input('password'));
         $user->experience = 0;
+        $user->email_verified_at = now();
         $user->save();
 
         if (! $user->save()) {

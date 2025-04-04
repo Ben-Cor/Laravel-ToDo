@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
@@ -61,5 +62,34 @@ class UserTest extends TestCase
                         ]);
                     });
             });
+    }
+
+    public function test_users_controller_add_user_success()
+    {
+        $request = [
+            'name' => 'Test User',
+            'email' => 'user@email.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ];
+        $response = $this->postJson('/api/users', $request);
+        $response->assertStatus(201)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll('message', 'data')
+                    ->has('data', function (AssertableJson $data) {
+                        $data->hasAll([
+                            'id',
+                            'name',
+                            'email',
+                            'email_verified_at',
+                            'experience',
+                        ]);
+                    });
+            });
+
+        $user = User::where('email', 'user@email.com')->first();
+        $this->assertNotNull($user);
+        $this->assertTrue(Hash::check('password', $user->password));
+        $this->assertEquals(0, $user->experience);
     }
 }
