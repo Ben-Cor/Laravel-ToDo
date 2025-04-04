@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use App\Models\User;
 
 class UserController extends Controller
@@ -29,5 +30,15 @@ class UserController extends Controller
             'message' => 'User successfully returned',
             'data' => $user,
         ], 200);
+    }
+
+    public function add(UserRequest $request)
+    {
+        $user = User::create($request);
+
+        return response()->json([
+            'message' => 'User successfully created',
+            'data' => $user,
+        ], 201);
     }
 }
