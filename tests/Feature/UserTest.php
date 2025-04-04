@@ -92,4 +92,30 @@ class UserTest extends TestCase
         $this->assertTrue(Hash::check('password', $user->password));
         $this->assertEquals(0, $user->experience);
     }
+
+    public function test_users_controller_add_user_validation_fail()
+    {
+        $request = [
+            'name' => 3,
+            'email' => 'user',
+            'password' => 's',
+            'password_confirmation' => 'd',
+        ];
+        $response = $this->postJson('/api/users', $request);
+        $response->assertStatus(422);
+        $this->assertDatabaseEmpty('users');
+    }
+
+    public function test_users_controller_add_user_password_fail()
+    {
+        $request = [
+            'name' => 'Test User',
+            'email' => 'user@email.com',
+            'password' => 'password',
+            'password_confirmation' => 'passwordtest',
+        ];
+        $response = $this->postJson('/api/users', $request);
+        $response->assertStatus(422);
+        $this->assertDatabaseEmpty('users');
+    }
 }
