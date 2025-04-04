@@ -107,4 +107,32 @@ class TaskTest extends TestCase
             'due_date' => null,
         ]);
     }
+
+    public function test_delete_task_success(): void
+    {
+        User::factory()->create(['id' => 1]);
+        Task::factory()->create([
+            'id' => 1,
+            'content' => 'Test task',
+            'completed' => false,
+            'due_date' => null,
+            'user_id' => 1,
+        ]);
+
+        $response = $this->deleteJson('/api/tasks/1');
+        $response->assertStatus(200);
+        $response->assertJson([
+            'message' => 'Task successfully deleted',
+        ]);
+        $this->assertDatabaseEmpty('tasks');
+    }
+
+    public function test_delete_task_fail(): void
+    {
+        $response = $this->deleteJson('/api/tasks/1');
+        $response->assertStatus(404);
+        $response->assertJson([
+            'message' => 'Task not found',
+        ]);
+    }
 }

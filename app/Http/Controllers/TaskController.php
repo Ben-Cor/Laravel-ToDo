@@ -46,8 +46,16 @@ class TaskController extends Controller
         ], 200);
     }
 
-    public function deleteTask(Task $task)
+    public function deleteTask(int $id)
     {
+        $task = Task::find($id);
+
+        if (! $task) {
+            return response()->json([
+                'message' => 'Task not found',
+            ], 404);
+        }
+
         if (! $task->delete()) {
             return response()->json([
                 'message' => 'Task deletion failed',
