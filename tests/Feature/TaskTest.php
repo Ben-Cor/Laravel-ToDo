@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -35,6 +36,41 @@ class TaskTest extends TestCase
             'completed' => false,
             'user_id' => 1,
             'due_date' => null,
+        ]);
+
+        $this->assertDatabaseCount('tasks', 1);
+    }
+
+    public function test_add_task_correct_with_category(): void
+    {
+        User::factory()->create(['id' => 1]);
+        Category::factory()->create();
+
+        $request = [
+            'content' => 'Test task',
+            'completed' => false,
+            'user_id' => 1,
+            'due_date' => null,
+            'category_id' => 1,
+        ];
+
+        $response = $this->postJson('/api/tasks', $request);
+
+        $response->assertStatus(201);
+        $response->assertJson([
+            'message' => 'Task successfully created',
+        ]);
+
+        $this->assertDatabaseHas('tasks', [
+            'content' => 'Test task',
+            'completed' => false,
+            'user_id' => 1,
+            'due_date' => null,
+        ]);
+
+        $this->assertDatabaseHas('category_task', [
+            'task_id' => 1,
+            'category_id' => 1,
         ]);
 
         $this->assertDatabaseCount('tasks', 1);
@@ -82,6 +118,54 @@ class TaskTest extends TestCase
         ]);
     }
 
+    public function test_update_task_complete_with_category(): void
+    {
+        User::factory()->create(['id' => 1]);
+        Category::factory()->count(3)->create();
+        $task = Task::factory()->create([
+            'id' => 1,
+            'content' => 'Test task',
+            'user_id' => 1,
+            'completed' => false,
+            'due_date' => null,
+        ]);
+        $task->categories()->attach(1);
+        $task->save();
+
+        $this->assertDatabaseHas('category_task', [
+            'task_id' => 1,
+            'category_id' => 1,
+        ]);
+
+        $request = [
+            'content' => 'Test task updated name',
+            'user_id' => 1,
+            'category_id' => [2, 3],
+        ];
+
+        $response = $this->putJson('/api/tasks/1', $request);
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('tasks', [
+            'content' => 'Test task updated name',
+            'completed' => false,
+            'user_id' => 1,
+            'due_date' => null,
+        ]);
+        $this->assertDatabaseMissing('category_task', [
+            'task_id' => 1,
+            'category_id' => 1,
+        ]);
+        $this->assertDatabaseHas('category_task', [
+            'task_id' => 1,
+            'category_id' => 2,
+        ]);
+        $this->assertDatabaseHas('category_task', [
+            'task_id' => 1,
+            'category_id' => 3,
+        ]);
+        $this->assertDatabaseCount('category_task', 2);
+    }
+
     public function test_update_task_invalid(): void
     {
         User::factory()->create(['id' => 1]);
@@ -111,13 +195,15 @@ class TaskTest extends TestCase
     public function test_delete_task_success(): void
     {
         User::factory()->create(['id' => 1]);
-        Task::factory()->create([
+        Category::factory()->count(1)->create();
+        $task = Task::factory()->create([
             'id' => 1,
             'content' => 'Test task',
             'completed' => false,
             'due_date' => null,
             'user_id' => 1,
         ]);
+        $task->categories()->attach(1);
 
         $response = $this->deleteJson('/api/tasks/1');
         $response->assertStatus(200);
@@ -125,6 +211,7 @@ class TaskTest extends TestCase
             'message' => 'Task successfully deleted',
         ]);
         $this->assertDatabaseEmpty('tasks');
+        $this->assertDatabaseEmpty('category_task');
     }
 
     public function test_delete_task_fail(): void
