@@ -20,7 +20,7 @@ class UserController extends Controller
 
     public function find(int $id)
     {
-        $user = User::with('tasks')->find($id);
+        $user = User::with('tasks.categories')->find($id);
         if (! $user) {
             return response()->json([
                 'message' => 'User not found',
