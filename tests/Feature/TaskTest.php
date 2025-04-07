@@ -156,7 +156,7 @@ class TaskTest extends TestCase
             'category_id' => 1,
         ]);
         $this->assertDatabaseHas('category_task', [
-           'task_id' => 1,
+            'task_id' => 1,
             'category_id' => 2,
         ]);
         $this->assertDatabaseHas('category_task', [

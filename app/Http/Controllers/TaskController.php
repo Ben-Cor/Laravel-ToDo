@@ -38,7 +38,7 @@ class TaskController extends Controller
         $task->due_date = $request->input('due_date');
         $task->save();
 
-        if (!$task->save()) {
+        if (! $task->save()) {
             return response()->json([
                 'message' => 'Task update failed',
             ], 500);
@@ -64,6 +64,8 @@ class TaskController extends Controller
                 'message' => 'Task not found',
             ], 404);
         }
+
+        $task->categories()->detach();
 
         if (! $task->delete()) {
             return response()->json([
