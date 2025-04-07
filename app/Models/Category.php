@@ -11,6 +11,12 @@ class Category extends Model
     /** @use HasFactory<CategoryFactory> */
     use HasFactory;
 
+    protected $hidden = [
+        'updated_at',
+        'created_at',
+        'pivot',
+    ];
+
     public function tasks()
     {
         return $this->belongsToMany(Task::class);
