@@ -195,13 +195,15 @@ class TaskTest extends TestCase
     public function test_delete_task_success(): void
     {
         User::factory()->create(['id' => 1]);
-        Task::factory()->create([
+        Category::factory()->count(1)->create();
+        $task = Task::factory()->create([
             'id' => 1,
             'content' => 'Test task',
             'completed' => false,
             'due_date' => null,
             'user_id' => 1,
         ]);
+        $task->categories()->attach(1);
 
         $response = $this->deleteJson('/api/tasks/1');
         $response->assertStatus(200);
@@ -209,6 +211,7 @@ class TaskTest extends TestCase
             'message' => 'Task successfully deleted',
         ]);
         $this->assertDatabaseEmpty('tasks');
+        $this->assertDatabaseEmpty('category_task');
     }
 
     public function test_delete_task_fail(): void
