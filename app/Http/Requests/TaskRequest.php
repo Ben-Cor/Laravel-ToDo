@@ -13,6 +13,7 @@ class TaskRequest extends FormRequest
             'completed' => 'boolean',
             'user_id' => 'required|exists:users,id',
             'due_date' => 'nullable|date',
+            'category_id' => 'nullable|exists:categories,id',
         ];
     }
 }

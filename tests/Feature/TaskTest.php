@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -35,6 +36,41 @@ class TaskTest extends TestCase
             'completed' => false,
             'user_id' => 1,
             'due_date' => null,
+        ]);
+
+        $this->assertDatabaseCount('tasks', 1);
+    }
+
+    public function test_add_task_correct_with_category(): void
+    {
+        User::factory()->create(['id' => 1]);
+        Category::factory()->create();
+
+        $request = [
+            'content' => 'Test task',
+            'completed' => false,
+            'user_id' => 1,
+            'due_date' => null,
+            'category_id' => 1,
+        ];
+
+        $response = $this->postJson('/api/tasks', $request);
+
+        $response->assertStatus(201);
+        $response->assertJson([
+            'message' => 'Task successfully created',
+        ]);
+
+        $this->assertDatabaseHas('tasks', [
+            'content' => 'Test task',
+            'completed' => false,
+            'user_id' => 1,
+            'due_date' => null,
+        ]);
+
+        $this->assertDatabaseHas('category_task', [
+            'task_id' => 1,
+            'category_id' => 1,
         ]);
 
         $this->assertDatabaseCount('tasks', 1);
