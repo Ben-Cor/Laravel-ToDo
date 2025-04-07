@@ -38,10 +38,16 @@ class TaskController extends Controller
         $task->due_date = $request->input('due_date');
         $task->save();
 
-        if (! $task->save()) {
+        if (!$task->save()) {
             return response()->json([
                 'message' => 'Task update failed',
             ], 500);
+        }
+
+        if ($request->has('category_id')) {
+            $task->categories()->sync($request->input('category_id'));
+        } else {
+            $task->categories()->detach();
         }
 
         return response()->json([
