@@ -200,4 +200,18 @@ class UserTest extends TestCase
         $this->assertEquals('test@email.com', $user->email);
         $this->assertTrue(Hash::check('newpassword', $user->password));
     }
+
+    public function test_users_controller_update_user_cannot_find()
+    {
+        $request = [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+        ];
+        $response = $this->putJson('/api/users/1', $request);
+        $response->assertStatus(404)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll('message')
+                    ->where('message', 'User not found');
+            });
+    }
 }
