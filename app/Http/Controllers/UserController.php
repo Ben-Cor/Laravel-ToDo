@@ -54,4 +54,46 @@ class UserController extends Controller
             'data' => $user,
         ], 201);
     }
+
+    public function delete(int $id): JsonResponse
+    {
+        $user = User::find($id);
+        if (! $user) {
+            return response()->json([
+                'message' => 'User not found',
+            ], 404);
+        }
+
+        $user->tasks()->delete();
+        $user->delete();
+
+        return response()->json([
+            'message' => 'User successfully deleted',
+        ], 200);
+    }
+
+    public function update(UserRequest $request, int $id): JsonResponse
+    {
+        $user = User::find($id);
+        if (! $user) {
+            return response()->json([
+                'message' => 'User not found',
+            ], 404);
+        }
+
+        if ($request->input('name')) {
+            $user->name = $request->input('name');
+        }
+        if ($request->input('email')) {
+            $user->email = $request->input('email');
+        }
+        if ($request->has('password')) {
+            $user->password = bcrypt($request->input('password'));
+        }
+        $user->save();
+
+        return response()->json([
+            'message' => 'User successfully updated',
+        ], 200);
+    }
 }

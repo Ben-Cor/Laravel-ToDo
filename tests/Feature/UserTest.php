@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -117,5 +118,100 @@ class UserTest extends TestCase
         $response = $this->postJson('/api/users', $request);
         $response->assertStatus(422);
         $this->assertDatabaseEmpty('users');
+    }
+
+    public function test_users_controller_delete_user_success()
+    {
+        $user = User::factory()->create();
+        Task::factory()->create(['user_id' => $user->id]);
+        $response = $this->delete('/api/users/'.$user->id);
+        $response->assertStatus(200)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll('message')
+                    ->where('message', 'User successfully deleted');
+            });
+
+        $this->assertDatabaseMissing('users', [
+            'id' => $user->id,
+        ]);
+        $this->assertDatabaseEmpty('tasks');
+    }
+
+    public function test_users_controller_delete_user_fail()
+    {
+        $response = $this->delete('/api/users/1');
+        $response->assertStatus(404)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll('message')
+                    ->where('message', 'User not found');
+            });
+    }
+
+    public function test_users_controller_update_user_success()
+    {
+        $user = User::factory()->create([
+            'id' => 1,
+            'name' => 'Test User',
+            'email' => 'test@email.com',
+            'password' => 'password',
+        ]);
+
+        $request = [
+            'name' => 'Updated User',
+            'email' => 'updated@email.com',
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+        ];
+
+        $response = $this->putJson('/api/users/1', $request);
+        $response->assertStatus(200)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll('message')
+                    ->where('message', 'User successfully updated');
+            });
+        $user -> refresh();
+        $this->assertEquals('Updated User', $user->name);
+        $this->assertEquals('updated@email.com', $user->email);
+        $this->assertTrue(Hash::check('newpassword', $user->password));
+    }
+
+    public function test_users_controller_update_user_success_password_only()
+    {
+        $user = User::factory()->create([
+            'id' => 1,
+            'name' => 'Test User',
+            'email' => 'test@email.com',
+            'password' => 'password',
+        ]);
+
+        $request = [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+        ];
+
+        $response = $this->putJson('/api/users/1', $request);
+        $response->assertStatus(200)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll('message')
+                    ->where('message', 'User successfully updated');
+            });
+        $user -> refresh();
+        $this->assertEquals('Test User', $user->name);
+        $this->assertEquals('test@email.com', $user->email);
+        $this->assertTrue(Hash::check('newpassword', $user->password));
+    }
+
+    public function test_users_controller_update_user_cannot_find()
+    {
+        $request = [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+        ];
+        $response = $this->putJson('/api/users/1', $request);
+        $response->assertStatus(404)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll('message')
+                    ->where('message', 'User not found');
+            });
     }
 }
