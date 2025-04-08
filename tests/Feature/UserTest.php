@@ -139,12 +139,65 @@ class UserTest extends TestCase
 
     public function test_users_controller_delete_user_fail()
     {
-
         $response = $this->delete('/api/users/1');
         $response->assertStatus(404)
             ->assertJson(function (AssertableJson $json) {
                 $json->hasAll('message')
                     ->where('message', 'User not found');
             });
+    }
+
+    public function test_users_controller_update_user_success()
+    {
+        $user = User::factory()->create([
+            'id' => 1,
+            'name' => 'Test User',
+            'email' => 'test@email.com',
+            'password' => 'password',
+        ]);
+
+        $request = [
+            'name' => 'Updated User',
+            'email' => 'updated@email.com',
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+        ];
+
+        $response = $this->putJson('/api/users/1', $request);
+        $response->assertStatus(200)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll('message')
+                    ->where('message', 'User successfully updated');
+            });
+        $user -> refresh();
+        $this->assertEquals('Updated User', $user->name);
+        $this->assertEquals('updated@email.com', $user->email);
+        $this->assertTrue(Hash::check('newpassword', $user->password));
+    }
+
+    public function test_users_controller_update_user_success_password_only()
+    {
+        $user = User::factory()->create([
+            'id' => 1,
+            'name' => 'Test User',
+            'email' => 'test@email.com',
+            'password' => 'password',
+        ]);
+
+        $request = [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+        ];
+
+        $response = $this->putJson('/api/users/1', $request);
+        $response->assertStatus(200)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll('message')
+                    ->where('message', 'User successfully updated');
+            });
+        $user -> refresh();
+        $this->assertEquals('Test User', $user->name);
+        $this->assertEquals('test@email.com', $user->email);
+        $this->assertTrue(Hash::check('newpassword', $user->password));
     }
 }
